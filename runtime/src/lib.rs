@@ -154,14 +154,14 @@ parameter_types! {
 }
 
 impl pallet_node_authorization::Config for Runtime {
- type RuntimeEvent = RuntimeEvent;
- type MaxWellKnownNodes = MaxWellKnownNodes;
- type MaxPeerIdLength = MaxPeerIdLength;
- type AddOrigin = EnsureRoot<AccountId>;
- type RemoveOrigin = EnsureRoot<AccountId>;
- type SwapOrigin = EnsureRoot<AccountId>;
- type ResetOrigin = EnsureRoot<AccountId>;
- type WeightInfo = ();
+	type RuntimeEvent = RuntimeEvent;
+	type MaxWellKnownNodes = MaxWellKnownNodes;
+	type MaxPeerIdLength = MaxPeerIdLength;
+	type AddOrigin = EnsureRoot<AccountId>;
+	type RemoveOrigin = EnsureRoot<AccountId>;
+	type SwapOrigin = EnsureRoot<AccountId>;
+	type ResetOrigin = EnsureRoot<AccountId>;
+	type WeightInfo = ();
 }
 
 // Configure FRAME pallets to include in runtime.
@@ -284,10 +284,20 @@ impl pallet_template::Config for Runtime {
 }
 
 impl pallet_utility::Config for Runtime {
-  type RuntimeEvent = RuntimeEvent;
-  type RuntimeCall = RuntimeCall;
-  type PalletsOrigin = OriginCaller;
-  type WeightInfo = pallet_utility::weights::SubstrateWeight<Runtime>;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
+	type PalletsOrigin = OriginCaller;
+	type WeightInfo = pallet_utility::weights::SubstrateWeight<Runtime>;
+}
+
+impl pallet_nicks::Config for Runtime {
+	type Currency = Balances;
+	type ReservationFee = ConstU128<100>;
+	type Slashed = ();
+	type ForceOrigin = frame_system::EnsureRoot<AccountId>;
+	type MinLength = ConstU32<8>;
+	type MaxLength = ConstU32<32>;
+	type RuntimeEvent = RuntimeEvent;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -311,6 +321,8 @@ construct_runtime!(
 		Utility: pallet_utility,
 		// Adding NodeAuthorization
 		NodeAuthorization: pallet_node_authorization::{Pallet, Call, Storage, Event<T>, Config<T>},
+		// Adding Nicks pallet
+		Nicks: pallet_nicks,
 	}
 );
 
