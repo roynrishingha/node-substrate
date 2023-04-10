@@ -45,6 +45,8 @@ use pallet_transaction_payment::{ConstFeeMultiplier, CurrencyAdapter, Multiplier
 pub use sp_runtime::BuildStorage;
 pub use sp_runtime::{Perbill, Permill};
 
+use frame_system::EnsureRoot;
+
 /// Import the template pallet.
 pub use pallet_template;
 
@@ -147,6 +149,19 @@ parameter_types! {
 	pub BlockLength: frame_system::limits::BlockLength = frame_system::limits::BlockLength
 		::max_with_normal_ratio(5 * 1024 * 1024, NORMAL_DISPATCH_RATIO);
 	pub const SS58Prefix: u8 = 42;
+	pub const MaxWellKnownNodes: u32 = 8;
+	pub const MaxPeerIdLength: u32 = 128;
+}
+
+impl pallet_node_authorization::Config for Runtime {
+ type RuntimeEvent = RuntimeEvent;
+ type MaxWellKnownNodes = MaxWellKnownNodes;
+ type MaxPeerIdLength = MaxPeerIdLength;
+ type AddOrigin = EnsureRoot<AccountId>;
+ type RemoveOrigin = EnsureRoot<AccountId>;
+ type SwapOrigin = EnsureRoot<AccountId>;
+ type ResetOrigin = EnsureRoot<AccountId>;
+ type WeightInfo = ();
 }
 
 // Configure FRAME pallets to include in runtime.
@@ -294,6 +309,8 @@ construct_runtime!(
 		TemplateModule: pallet_template,
 		// Adding new pallet
 		Utility: pallet_utility,
+		// Adding NodeAuthorization
+		NodeAuthorization: pallet_node_authorization::{Pallet, Call, Storage, Event<T>, Config<T>},
 	}
 );
 
